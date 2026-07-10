@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/ShutterLog/">
     <Project Path="ShutterLog/ShutterLog.csproj" />
+    <Project Path="ShutterLog.Test/ShutterLog.Test.csproj" />
   </Folder>
 </Solution>

@@ -67,7 +67,7 @@ public class MetadataUtils
         return int.TryParse(tagDescription, out int iso) ? iso : 0;
     }
 
-    private static double ParseExposureTime(string? tagDescription)
+    internal static double ParseExposureTime(string? tagDescription)
     {
         if (tagDescription is null)
         {
@@ -97,7 +97,7 @@ public class MetadataUtils
         }
     }
 
-    private static double ParseFNumber(string? tagDescription)
+    internal static double ParseFNumber(string? tagDescription)
     {
         if (tagDescription is null)
         {
@@ -114,7 +114,7 @@ public class MetadataUtils
         return double.TryParse(parts[1], out double fNumber) ? fNumber : 0.0;
     }
 
-    private static double ParseFocalLength(string? tagDescription)
+    internal static double ParseFocalLength(string? tagDescription)
     {
         if (tagDescription is null)
         {
