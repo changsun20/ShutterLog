@@ -6,24 +6,22 @@ class Program
 {
     static int Main(string[] args)
     {
-        RootCommand rootCommand = new("Sample app for System.CommandLine");
-
-        ParseResult parseResult = rootCommand.Parse(args);
-        ReadFile();
+        ParseResult parseResult = Commands.ParseArgs(args);
         return parseResult.Invoke();
     }
 
-    private static void ReadFile()
+    public static List<Image> ReadFile(string path)
     {
-        var files = System.IO.Directory.EnumerateFiles(".");
+        var files = System.IO.Directory.EnumerateFiles(path, "*.JPG", SearchOption.AllDirectories);
+        List<Image> images = new([]);
         foreach (var file in files)
         {
-            Console.WriteLine(file);
-            if (file.EndsWith(".NEF"))
-            {
-                Image image = MetadataUtils.GetMetadata(file);
-                image.PrintStats();
-            }
+            Image image = MetadataUtils.GetMetadata(file);
+            images.Add(image);
+            // Console.WriteLine(file);
+            // Console.WriteLine(image.ToString());
         }
+
+        return images;
     }
 }
