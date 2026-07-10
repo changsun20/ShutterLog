@@ -19,21 +19,22 @@ class MetadataUtils
                 foreach (var tag in directory.Tags)
                 {
                     var description = tag.Description;
-                    if (tag.Name == "Focal Length")
+                    switch (tag.Name)
                     {
-                        focalLength = ParseFocalLength(description);
-                    }
-                    if (tag.Name == "ISO Speed Ratings")
-                    {
-                        iso = ParseISO(description);
-                    }
-                    if (tag.Name == "Exposure Time")
-                    {
-                        exposureTimeDenominator = ParseExposureTimeDenominator(description);
-                    }
-                    if (tag.Name == "F-Number")
-                    {
-                        fNumber = ParseFNumber(description);
+                        case "Focal Length":
+                            focalLength = ParseFocalLength(description);
+                            break;
+                        case "ISO Speed Ratings":
+                            iso = ParseISO(description);
+                            break;
+                        case "Exposure Time":
+                            exposureTimeDenominator = ParseExposureTimeDenominator(description);
+                            break;
+                        case "F-Number":
+                            fNumber = ParseFNumber(description);
+                            break;
+                        default:
+                            break;
                     }
                 }
             }

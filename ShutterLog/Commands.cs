@@ -7,28 +7,42 @@ class Commands
     public static ParseResult ParseArgs(string[] args)
     {
         RootCommand rootCommand = new("Sample app for System.CommandLine");
-
-        Command checkCommand = new(
-            "check",
-            "Generate metadata statistics report for the given path"
-        );
+        Command checkCommand = buildCheckCommand(rootCommand);
         rootCommand.Subcommands.Add(checkCommand);
-
-        Argument<string> pathArgument = new("path")
-        {
-            Description = "path",
-            DefaultValueFactory = parseResult => ".",
-        };
-        checkCommand.Arguments.Add(pathArgument);
-
-        checkCommand.SetAction(parseResult => checkAction(parseResult.GetValue(pathArgument)));
 
         return rootCommand.Parse(args);
     }
 
-    private static void checkAction(string path)
+    private static Command buildCheckCommand(RootCommand root)
     {
-        var images = Program.ReadFile(path);
+        Command checkCommand = new(
+            "check",
+            "Generate metadata statistics report for the given path"
+        );
+
+        Argument<string> pathArgument = new("path")
+        {
+            Description = "Path to the directory of photos",
+            DefaultValueFactory = parseResult => ".",
+        };
+        checkCommand.Arguments.Add(pathArgument);
+
+        var recursiveOption = new Option<bool>("--recursive", "-r")
+        {
+            Description = "Recurse reading photos into subdirectories",
+        };
+        checkCommand.Options.Add(recursiveOption);
+
+        checkCommand.SetAction(parseResult =>
+            checkAction(parseResult.GetValue(pathArgument), parseResult.GetValue(recursiveOption))
+        );
+
+        return checkCommand;
+    }
+
+    private static void checkAction(string path, bool isRecursive)
+    {
+        var images = FileUtils.ReadFile(path, isRecursive);
         var focalStat = Stat.GetFocalLengthStat(images);
         Visualize.DrawFocalLengthHistogram(focalStat);
     }
