@@ -34,17 +34,17 @@ class Stat
 
     public static List<(string Label, int Count)> GetExposureTimeStat(List<Image> images)
     {
-        Func<Image, int> selector = img => img.ExposureTimeDenominator;
-        Func<int, int> bucket = v =>
+        Func<Image, double> selector = img => img.ExposureTime;
+        Func<double, int> bucket = v =>
             v switch
             {
-                <= 15 => 0,
-                <= 30 => 1,
-                <= 60 => 2,
-                <= 125 => 3,
-                <= 250 => 4,
-                <= 500 => 5,
-                <= 1000 => 6,
+                >= 1.0 / 15.0 => 0,
+                >= 1.0 / 30.0 => 1,
+                >= 1.0 / 60.0 => 2,
+                >= 1.0 / 125.0 => 3,
+                >= 1.0 / 250.0 => 4,
+                >= 1.0 / 500.0 => 5,
+                >= 1.0 / 1000.0 => 6,
                 _ => 7,
             };
         string[] labels =

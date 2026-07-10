@@ -43,9 +43,9 @@ class Commands
 
         checkCommand.SetAction(parseResult =>
             checkAction(
-                parseResult.GetValue(pathArgument),
+                parseResult.GetValue(pathArgument) ?? ".",
                 parseResult.GetValue(recursiveOption),
-                parseResult.GetValue(extensionsOption)
+                parseResult.GetValue(extensionsOption) ?? [".jpg"]
             )
         );
 

@@ -2,76 +2,125 @@ using MetadataExtractor;
 
 namespace ShutterLog;
 
-class MetadataUtils
+public class MetadataUtils
 {
-    public static Image GetMetadata(string file)
+    public static Image? GetMetadata(string file)
     {
-        var directories = ImageMetadataReader.ReadMetadata(file);
-
-        int iso = 0;
-        int exposureTimeDenominator = 0;
-        double fNumber = 0.0;
-        double focalLength = 0.0;
-        foreach (var directory in directories)
+        try
         {
-            if (directory.Name == "Exif SubIFD")
+            var directories = ImageMetadataReader.ReadMetadata(file);
+
+            int iso = 0;
+            double exposureTime = 0.0;
+            double fNumber = 0.0;
+            double focalLength = 0.0;
+            foreach (var directory in directories)
             {
-                foreach (var tag in directory.Tags)
+                if (directory.Name == "Exif SubIFD")
                 {
-                    var description = tag.Description;
-                    switch (tag.Name)
+                    foreach (var tag in directory.Tags)
                     {
-                        case "Focal Length":
-                            focalLength = ParseFocalLength(description);
-                            break;
-                        case "ISO Speed Ratings":
-                            iso = ParseISO(description);
-                            break;
-                        case "Exposure Time":
-                            exposureTimeDenominator = ParseExposureTimeDenominator(description);
-                            break;
-                        case "F-Number":
-                            fNumber = ParseFNumber(description);
-                            break;
-                        default:
-                            break;
+                        var description = tag.Description;
+                        switch (tag.Name)
+                        {
+                            case "Focal Length":
+                                focalLength = ParseFocalLength(description);
+                                break;
+                            case "ISO Speed Ratings":
+                                iso = ParseISO(description);
+                                break;
+                            case "Exposure Time":
+                                exposureTime = ParseExposureTime(description);
+                                break;
+                            case "F-Number":
+                                fNumber = ParseFNumber(description);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
+            return new Image(focalLength, exposureTime, fNumber, iso);
         }
-        return new Image(focalLength, exposureTimeDenominator, fNumber, iso);
-    }
-
-    private static int ParseISO(string tagDescription)
-    {
-        return int.Parse(tagDescription);
-    }
-
-    private static int ParseExposureTimeDenominator(string tagDescription)
-    {
-        // e.g. 1/60 s
-        if (tagDescription.Contains('/'))
+        catch (ImageProcessingException)
         {
-            return int.Parse(tagDescription.Split("/")[1].Split(" ")[0]);
+            Console.Error.WriteLine(
+                $"Warning: Cannot read file {file}. Please check if the photo is corrupted."
+            );
+            return null;
+        }
+        catch (IOException)
+        {
+            Console.Error.WriteLine($"Warning: Cannot read file {file}. An IO error occurred.");
+            return null;
+        }
+    }
+
+    internal static int ParseISO(string? tagDescription)
+    {
+        if (tagDescription is null)
+        {
+            return 0;
+        }
+
+        return int.TryParse(tagDescription, out int iso) ? iso : 0;
+    }
+
+    private static double ParseExposureTime(string? tagDescription)
+    {
+        if (tagDescription is null)
+        {
+            return 0.0;
+        }
+
+        var parts = tagDescription.Split("/");
+
+        // e.g. 1/60 s
+        if (parts.Length >= 2)
+        {
+            if (int.TryParse(parts[1].Split(" ")[0], out int denominator))
+            {
+                return int.TryParse(parts[0], out int numerator)
+                    ? (double)numerator / (double)denominator
+                    : 0.0;
+            }
+            else
+            {
+                return 0.0;
+            }
         }
         // e.g. 0.02 s
         else
         {
-            double time = double.Parse(tagDescription.Split(" ")[0]);
-            int denominator = (int)(1.0 / time);
-            return denominator;
+            return double.TryParse(tagDescription.Split(" ")[0], out double time) ? time : 0.0;
         }
     }
 
-    private static double ParseFNumber(string tagDescription)
+    private static double ParseFNumber(string? tagDescription)
     {
+        if (tagDescription is null)
+        {
+            return 0.0;
+        }
+
         // e.g. f/1.8
-        return double.Parse(tagDescription.Split("/")[1]);
+        var parts = tagDescription.Split("/");
+
+        if (parts.Length < 2)
+        {
+            return 0.0;
+        }
+        return double.TryParse(parts[1], out double fNumber) ? fNumber : 0.0;
     }
 
-    private static double ParseFocalLength(string tagDescription)
+    private static double ParseFocalLength(string? tagDescription)
     {
+        if (tagDescription is null)
+        {
+            return 0.0;
+        }
         // e.g. 50 mm
-        return double.Parse(tagDescription.Split(" ")[0]);
+        return double.TryParse(tagDescription.Split(" ")[0], out double focal) ? focal : 0.0;
     }
 }
