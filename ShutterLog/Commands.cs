@@ -7,13 +7,13 @@ class Commands
     public static ParseResult ParseArgs(string[] args)
     {
         RootCommand rootCommand = new("Sample app for System.CommandLine");
-        Command checkCommand = buildCheckCommand(rootCommand);
+        Command checkCommand = buildCheckCommand();
         rootCommand.Subcommands.Add(checkCommand);
 
         return rootCommand.Parse(args);
     }
 
-    private static Command buildCheckCommand(RootCommand root)
+    private static Command buildCheckCommand()
     {
         Command checkCommand = new(
             "check",
@@ -42,8 +42,7 @@ class Commands
 
     private static void checkAction(string path, bool isRecursive)
     {
-        var images = FileUtils.ReadFile(path, isRecursive);
-        var focalStat = Stat.GetFocalLengthStat(images);
-        Visualize.DrawFocalLengthHistogram(focalStat);
+        var images = FileUtils.ReadImages(path, isRecursive);
+        Visualize.VisualizeAll(images);
     }
 }

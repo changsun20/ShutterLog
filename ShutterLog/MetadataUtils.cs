@@ -58,7 +58,7 @@ class MetadataUtils
         else
         {
             double time = double.Parse(tagDescription.Split(" ")[0]);
-            int denominator = int.Parse($"{1 / time}".Split(".")[0]);
+            int denominator = (int)(1.0 / time);
             return denominator;
         }
     }
