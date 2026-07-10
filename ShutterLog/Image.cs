@@ -7,15 +7,13 @@ public class Image(double focalLength, int exposureTimeDenominator, double fNumb
     public double FNumber { get; init; } = fNumber;
     public int ISO { get; init; } = iso;
 
-    public void PrintStats()
+    public override string ToString()
     {
-        Console.WriteLine(
-            $"""
+        return $"""
 Focal Length: {FocalLength} mm
 Exposure Time: 1/{ExposureTimeDenominator} s
 F-Number: f/{FNumber}
 ISO: {ISO}
-"""
-        );
+""";
     }
 }
