@@ -23,7 +23,7 @@ class Commands
         Argument<string> pathArgument = new("path")
         {
             Description = "Path to the directory of photos",
-            DefaultValueFactory = parseResult => ".",
+            DefaultValueFactory = _ => ".",
         };
         checkCommand.Arguments.Add(pathArgument);
 
@@ -33,16 +33,28 @@ class Commands
         };
         checkCommand.Options.Add(recursiveOption);
 
+        var extensionsOption = new Option<string[]>("--extensions", "-e")
+        {
+            Description = "File extensions to include",
+            AllowMultipleArgumentsPerToken = true,
+            DefaultValueFactory = _ => [".jpg"],
+        };
+        checkCommand.Options.Add(extensionsOption);
+
         checkCommand.SetAction(parseResult =>
-            checkAction(parseResult.GetValue(pathArgument), parseResult.GetValue(recursiveOption))
+            checkAction(
+                parseResult.GetValue(pathArgument),
+                parseResult.GetValue(recursiveOption),
+                parseResult.GetValue(extensionsOption)
+            )
         );
 
         return checkCommand;
     }
 
-    private static void checkAction(string path, bool isRecursive)
+    private static void checkAction(string path, bool isRecursive, string[] extensionsOption)
     {
-        var images = FileUtils.ReadImages(path, isRecursive);
+        var images = FileUtils.ReadImages(path, isRecursive, extensionsOption);
         Visualize.VisualizeAll(images);
     }
 }
