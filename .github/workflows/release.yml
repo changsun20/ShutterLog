@@ -30,6 +30,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y musl-tools
 
       - name: Publish
+        shell: bash
         run: |
           dotnet publish ShutterLog/ShutterLog.csproj \
             -c Release \
