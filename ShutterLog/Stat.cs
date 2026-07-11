@@ -8,6 +8,7 @@ class Stat
         Func<double, int> bucket = v =>
             v switch
             {
+                0 => 8,
                 <= 20 => 0,
                 <= 28 => 1,
                 <= 38 => 2,
@@ -27,6 +28,7 @@ class Stat
             "106-200 mm",
             "201-400 mm",
             ">400 mm",
+            "N/A",
         ];
 
         return BuildStat(images, selector, bucket, labels);
@@ -38,6 +40,7 @@ class Stat
         Func<double, int> bucket = v =>
             v switch
             {
+                0 => 8,
                 >= 1.0 / 15.0 => 0,
                 >= 1.0 / 30.0 => 1,
                 >= 1.0 / 60.0 => 2,
@@ -57,6 +60,7 @@ class Stat
             "1/250-1/500 s",
             "1/500-1/1000 s",
             "<1/1000 s",
+            "N/A",
         ];
 
         return BuildStat(images, selector, bucket, labels);
@@ -68,6 +72,7 @@ class Stat
         Func<double, int> bucket = v =>
             v switch
             {
+                0 => 8,
                 <= 1.4 => 0,
                 <= 2.8 => 1,
                 <= 4 => 2,
@@ -87,6 +92,7 @@ class Stat
             "f/8-11",
             "f/11-16",
             ">f/16",
+            "N/A",
         ];
 
         return BuildStat(images, selector, bucket, labels);
@@ -98,6 +104,7 @@ class Stat
         Func<int, int> bucket = v =>
             v switch
             {
+                0 => 8,
                 <= 100 => 0,
                 <= 200 => 1,
                 <= 400 => 2,
@@ -117,6 +124,7 @@ class Stat
             "1600-3200",
             "3200-6400",
             ">6400",
+            "N/A",
         ];
 
         return BuildStat(images, selector, bucket, labels);
