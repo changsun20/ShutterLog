@@ -35,7 +35,8 @@ jobs:
           dotnet publish ShutterLog/ShutterLog.csproj \
             -c Release \
             -r ${{ matrix.rid }} \
-            -o publish
+            -o publish \
+            -p:StaticExecutable=true
 
       - name: Rename artifact
         shell: bash
